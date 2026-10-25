@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>iQuestify – E-mail megerősítés</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 24px; background: #050F20;
+    background: radial-gradient(circle at 50% 25%, #0c2a46, #08203A 45%, #050F20 100%);
+    font-family: Arial, Helvetica, sans-serif; color: #F4F0E7; text-align: center;
+  }
+  .card { width: 100%; max-width: 440px; }
+  .logo { display: block; width: 260px; max-width: 80%; height: auto; margin: 0 auto 28px; }
+  .panel { background: #08203A; border: 1px solid #1F4468; border-radius: 20px; padding: 36px 28px; }
+  .icon { width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 50%; border: 2px solid #E9C46A;
+    display: flex; align-items: center; justify-content: center; font-size: 32px; color: #E9C46A; }
+  h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 24px; margin: 0 0 12px; color: #fff; }
+  p { font-size: 16px; line-height: 1.6; color: #C9D2DE; margin: 0 0 8px; }
+  .btn { display: inline-block; margin-top: 22px; padding: 16px 30px; background: #E9C46A; color: #08203A;
+    font-weight: bold; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; border-radius: 14px; font-size: 15px; }
+  .note { font-size: 13px; color: #8FA0B5; margin-top: 18px; }
+  .hidden { display: none; }
+  .foot { margin-top: 24px; font-size: 13px; color: #8FA0B5; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <img class="logo" alt="iQuestify" src="https://nkdjogxkbojmdvicxfwy.supabase.co/storage/v1/object/public/brand/iquestify-logo.png">
+    <div class="panel">
+      <div id="ok">
+        <div class="icon">&#10003;</div>
+        <h1>Sikeres megerősítés!</h1>
+        <p>Az e-mail-címed megerősítve.</p>
+        <p>Nyisd meg az iQuestify appot,<br>és lépj be.</p>
+        <a id="open" class="btn" href="iquestify://auth-callback">Megnyitás az appban</a>
+        <p class="note">Ha az app nincs telepítve, vagy számítógépen nyitottad meg ezt az oldalt, egyszerűen nyisd meg az iQuestify alkalmazást a telefonodon.</p>
+      </div>
+      <div id="err" class="hidden">
+        <div class="icon">!</div>
+        <h1>A link nem érvényes</h1>
+        <p>Ez a megerősítő link lejárt, vagy már felhasználtad.</p>
+        <p>Nyisd meg az iQuestify appot, és kérj új megerősítő levelet.</p>
+      </div>
+    </div>
+    <div class="foot">iQuestify · Fedezd fel, éld át, gyűjts</div>
+  </div>
+  <script>
+    (function () {
+      var q = window.location.search, h = window.location.hash;
+      var hasError = /(^|[?&#])error(=|_code=|_description=)/.test(q + h);
+      if (hasError) {
+        document.getElementById('ok').className = 'hidden';
+        document.getElementById('err').className = '';
+        return;
+      }
+      var target = 'iquestify://auth-callback' + q + h;
+      document.getElementById('open').setAttribute('href', target);
+      // Ha az app telepítve van, az OS azonnal átveszi az irányítást.
+      window.location.replace(target);
+    })();
+  </script>
+</body>
+</html>
