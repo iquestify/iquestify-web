@@ -1,67 +1,106 @@
+<!--
+  REFERENCIA-MÁSOLAT -- a TÉNYLEGES éles oldal egy KÜLÖN, PUBLIKUS repóban
+  él (`iquestify/iquestify-web`, GitHub Pages), NEM ebből a privát
+  app-repóból hosztolt -- szándékosan, hogy a `docs/` mappát ne kelljen
+  publikussá tenni. Ha ez a fájl változik, a másik repó másolatát is
+  frissíteni kell -- a két fájl NINCS automatikusan szinkronban.
+
+  JAVÍTVA (48. élő kör, 2026-10-26), Merci kérése (5. pont): KORÁBBAN ez az
+  oldal MINDIG "Sikeres megerősítés!"-t mutatott, és MINDIG az
+  `iquestify://auth-callback` sémára irányított át, FÜGGETLENÜL attól,
+  milyen link érkezett ide -- egy LEJÁRT/HASZNÁLT jelszó-visszaállító
+  linknél ez FÉLREVEZETŐ volt (a Supabase a hibát -- error/error_code/
+  error_description paraméterekkel -- UGYANERRE a redirect_to URL-re
+  küldi, mint egy sikeres megerősítést). Az oldal MOST:
+    - beolvassa a query-string ÉS a hash-fragment paramétereit is,
+    - ha van error/error_code/error_description paraméter, a LÁTHATÓ
+      szöveget is erre cseréli (NEM mutat hamis "Sikeres megerősítés!"-t),
+    - a `type` paraméter alapján dönti el, MELYIK natív deep linkre
+      irányítson át: `type=recovery` -> `iquestify://reset-password`,
+      egyébként -> `iquestify://auth-callback` (ez utóbbi az app saját,
+      `AppLinks().uriLinkStream`-alapú figyelőjének kell, lásd
+      `lib/screens/main_screen.dart` dokumentációját -- HIÁNYZÓ `type`
+      esetén, ami hibánál előfordulhat, `auth-callback`-re esik vissza).
+-->
 <!doctype html>
 <html lang="hu">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow">
-<title>iQuestify – E-mail megerősítés</title>
+<title>iQuestify -- E-mail megerősítve</title>
 <style>
   :root { color-scheme: dark; }
-  * { box-sizing: border-box; }
   body {
-    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
-    padding: 24px; background: #050F20;
-    background: radial-gradient(circle at 50% 25%, #0c2a46, #08203A 45%, #050F20 100%);
-    font-family: Arial, Helvetica, sans-serif; color: #F4F0E7; text-align: center;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    box-sizing: border-box;
+    background: radial-gradient(circle at 50% 30%, #142a40, #0a1f35 55%, #041226 100%);
+    font-family: Georgia, 'Times New Roman', serif;
+    color: #f4f0e7;
+    text-align: center;
   }
-  .card { width: 100%; max-width: 440px; }
-  .logo { display: block; width: 260px; max-width: 80%; height: auto; margin: 0 auto 28px; }
-  .panel { background: #08203A; border: 1px solid #1F4468; border-radius: 20px; padding: 36px 28px; }
-  .icon { width: 64px; height: 64px; margin: 0 auto 20px; border-radius: 50%; border: 2px solid #E9C46A;
-    display: flex; align-items: center; justify-content: center; font-size: 32px; color: #E9C46A; }
-  h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 24px; margin: 0 0 12px; color: #fff; }
-  p { font-size: 16px; line-height: 1.6; color: #C9D2DE; margin: 0 0 8px; }
-  .btn { display: inline-block; margin-top: 22px; padding: 16px 30px; background: #E9C46A; color: #08203A;
-    font-weight: bold; letter-spacing: 1px; text-transform: uppercase; text-decoration: none; border-radius: 14px; font-size: 15px; }
-  .note { font-size: 13px; color: #8FA0B5; margin-top: 18px; }
-  .hidden { display: none; }
-  .foot { margin-top: 24px; font-size: 13px; color: #8FA0B5; }
+  .card { max-width: 420px; }
+  .icon-circle {
+    width: 64px; height: 64px; margin: 0 auto 20px;
+    border-radius: 50%;
+    border: 2px solid #d6af60;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px; color: #d6af60;
+  }
+  h1 { font-size: 22px; margin: 0 0 12px; color: #fff; }
+  p { font-size: 15px; line-height: 1.6; color: #a8b2c1; margin: 0 0 8px; }
+  .brand { color: #d6af60; font-weight: bold; }
 </style>
 </head>
 <body>
   <div class="card">
-    <img class="logo" alt="iQuestify" src="https://nkdjogxkbojmdvicxfwy.supabase.co/storage/v1/object/public/brand/iquestify-logo.png">
-    <div class="panel">
-      <div id="ok">
-        <div class="icon">&#10003;</div>
-        <h1>Sikeres megerősítés!</h1>
-        <p>Az e-mail-címed megerősítve.</p>
-        <p>Nyisd meg az iQuestify appot,<br>és lépj be.</p>
-        <a id="open" class="btn" href="iquestify://auth-callback">Megnyitás az appban</a>
-        <p class="note">Ha az app nincs telepítve, vagy számítógépen nyitottad meg ezt az oldalt, egyszerűen nyisd meg az iQuestify alkalmazást a telefonodon.</p>
-      </div>
-      <div id="err" class="hidden">
-        <div class="icon">!</div>
-        <h1>A link nem érvényes</h1>
-        <p>Ez a megerősítő link lejárt, vagy már felhasználtad.</p>
-        <p>Nyisd meg az iQuestify appot, és kérj új megerősítő levelet.</p>
-      </div>
-    </div>
-    <div class="foot">iQuestify · Fedezd fel, éld át, gyűjts</div>
+    <div class="icon-circle" id="icon">&#10003;</div>
+    <h1 id="title">Sikeres megerősítés!</h1>
+    <p id="body">Nyisd meg az <span class="brand">iQuestify</span> appot, és lépj be.</p>
+    <p id="fallback-note" style="display:none; font-size: 13px; margin-top: 18px;">
+      Ha nem indult el automatikusan, nyisd meg kézzel az iQuestify alkalmazást.
+    </p>
   </div>
   <script>
     (function () {
-      var q = window.location.search, h = window.location.hash;
-      var hasError = /(^|[?&#])error(=|_code=|_description=)/.test(q + h);
-      if (hasError) {
-        document.getElementById('ok').className = 'hidden';
-        document.getElementById('err').className = '';
-        return;
+      function getParam(name) {
+        var fromQuery = new URLSearchParams(window.location.search).get(name);
+        if (fromQuery) return fromQuery;
+        var hash = window.location.hash.replace(/^#/, '');
+        return new URLSearchParams(hash).get(name);
       }
-      var target = 'iquestify://auth-callback' + q + h;
-      document.getElementById('open').setAttribute('href', target);
-      // Ha az app telepítve van, az OS azonnal átveszi az irányítást.
+
+      var error = getParam('error');
+      var errorCode = getParam('error_code');
+      var errorDescription = getParam('error_description');
+      var type = getParam('type');
+      var hasError = !!(error || errorCode || errorDescription);
+
+      if (hasError) {
+        document.getElementById('icon').textContent = '!';
+        document.getElementById('icon').style.borderColor = '#e2735a';
+        document.getElementById('icon').style.color = '#e2735a';
+        document.getElementById('title').textContent = 'A link lejárt vagy már érvénytelen';
+        document.getElementById('body').innerHTML =
+          'Ez a link már nem érvényes, vagy korábban felhasználtad. ' +
+          'Nyisd meg az <span class="brand">iQuestify</span> appot, és kérj új linket.';
+      }
+
+      // `type=recovery` -> a jelszó-visszaállításra DEDIKÁLT deep link,
+      // hogy az app saját figyelője (lásd a fájl fejléc-dokumentációját)
+      // a lejárt-link képernyőt tudja mutatni hiba esetén is -- minden
+      // más esetben (vagy ha a `type` hiányzik) `auth-callback`.
+      var host = (type === 'recovery') ? 'reset-password' : 'auth-callback';
+      var target = 'iquestify://' + host + window.location.search + window.location.hash;
+
       window.location.replace(target);
+      setTimeout(function () {
+        document.getElementById('fallback-note').style.display = 'block';
+      }, 1200);
     })();
   </script>
 </body>
