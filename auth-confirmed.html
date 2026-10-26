@@ -21,6 +21,14 @@
       `AppLinks().uriLinkStream`-alapú figyelőjének kell, lásd
       `lib/screens/main_screen.dart` dokumentációját -- HIÁNYZÓ `type`
       esetén, ami hibánál előfordulhat, `auth-callback`-re esik vissza).
+
+  JAVÍTVA (48. élő kör, 2026-10-26), Merci kérése: a #fallback-note
+  (MINDKÉT állapotban -- sikeres megerősítés ÉS lejárt/érvénytelen link
+  esetén is ugyanaz az egy bekezdés, nincs külön szövege egyiknek sem)
+  explicit <br>-t kapott "kézzel az" után, hogy az "iQuestify alkalmazást."
+  mindig egyben, második sorként jelenjen meg -- NE csak a natív
+  betűtördelésre bízva (ami keskeny képernyőn az "alkalmazást." szót
+  egyedül hagyhatta volna a harmadik sorban).
 -->
 <!doctype html>
 <html lang="hu">
@@ -62,7 +70,8 @@
     <h1 id="title">Sikeres megerősítés!</h1>
     <p id="body">Nyisd meg az <span class="brand">iQuestify</span> appot, és lépj be.</p>
     <p id="fallback-note" style="display:none; font-size: 13px; margin-top: 18px;">
-      Ha nem indult el automatikusan, nyisd meg kézzel az iQuestify alkalmazást.
+      Ha nem indult el automatikusan, nyisd meg kézzel az<br>
+      <span class="brand">iQuestify</span> alkalmazást.
     </p>
   </div>
   <script>
