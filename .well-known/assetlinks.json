@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.iquestify.app",
+      "sha256_cert_fingerprints": [
+        "46:AA:50:C4:45:3E:E0:6A:16:06:87:F0:5F:15:03:BC:3A:CA:A6:19:3A:1F:BA:83:29:26:E5:71:FC:A8:AD:6E"
+      ]
+    }
+  }
+]
